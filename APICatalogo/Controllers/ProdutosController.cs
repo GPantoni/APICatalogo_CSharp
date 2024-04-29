@@ -1,6 +1,5 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +18,7 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
-        var produtos = _context.Produtos.ToList();
+        var produtos = _context.Produtos.AsNoTracking().ToList();
         if(produtos is null)
         {
             return NotFound();
@@ -30,7 +29,7 @@ public class ProdutosController : ControllerBase
     [HttpGet("{id:int}", Name ="ObterProduto")]
     public ActionResult<Produto> Get(int id)
     {
-        var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+        var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
         if(produto is null)
         {
             return NotFound("Produto não localizado...");
@@ -68,7 +67,7 @@ public class ProdutosController : ControllerBase
     [HttpDelete]
     public ActionResult Delete(int id)
     {
-        var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+        var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
 
         if (produto is null)
         {
