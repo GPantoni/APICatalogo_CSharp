@@ -1,6 +1,5 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +18,7 @@ public class CategoriasController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> Get()
     {
-        var categorias = _context.Categorias.ToList();
+        var categorias = _context.Categorias.AsNoTracking().ToList();
         if (categorias is null)
         {
             return NotFound();
@@ -30,7 +29,7 @@ public class CategoriasController : ControllerBase
     [HttpGet("{id:int}", Name ="ObterCategoria")]
     public ActionResult<Categoria> Get(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId.Equals(id));
+        var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId.Equals(id));
         if (categoria is null)
         {
             return NotFound("Categoria não localizada...");
@@ -41,7 +40,7 @@ public class CategoriasController : ControllerBase
     [HttpGet("produtos")]
     public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
     {
-        var categorias = _context.Categorias.Include(c => c.Produtos).ToList();
+        var categorias = _context.Categorias.AsNoTracking().Include(c => c.Produtos).ToList();
         if (categorias is null)
         {
             return NotFound();
@@ -77,7 +76,7 @@ public class CategoriasController : ControllerBase
     [HttpDelete]
     public ActionResult Delete(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+        var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
         if (categoria is null)
             return NotFound("Categoria não localizada...");
