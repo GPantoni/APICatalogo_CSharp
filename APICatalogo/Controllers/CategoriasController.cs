@@ -10,6 +10,7 @@ namespace APICatalogo.Controllers;
 public class CategoriasController : ControllerBase
 {
     private readonly AppDbContext _context;
+
     public CategoriasController(AppDbContext context)
     {
         _context = context;
@@ -41,7 +42,6 @@ public class CategoriasController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Ocorreu um problema ao tratar a sua solicitação.");
         }
-
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
@@ -51,16 +51,13 @@ public class CategoriasController : ControllerBase
         {
             var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
 
-            if (categoria == null)
-            {
-                return NotFound($"Categoria com id= {id} não encontrada...");
-            }
+            if (categoria == null) return NotFound($"Categoria com id= {id} não encontrada...");
             return Ok(categoria);
         }
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
-                       "Ocorreu um problema ao tratar a sua solicitação.");
+                "Ocorreu um problema ao tratar a sua solicitação.");
         }
     }
 
@@ -77,12 +74,11 @@ public class CategoriasController : ControllerBase
 
             return new CreatedAtRouteResult("ObterCategoria",
                 new { id = categoria.CategoriaId }, categoria);
-
         }
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
-                      "Ocorreu um problema ao tratar a sua solicitação.");
+                "Ocorreu um problema ao tratar a sua solicitação.");
         }
     }
 
@@ -91,10 +87,7 @@ public class CategoriasController : ControllerBase
     {
         try
         {
-            if (id != categoria.CategoriaId)
-            {
-                return BadRequest("Dados inválidos");
-            }
+            if (id != categoria.CategoriaId) return BadRequest("Dados inválidos");
             _context.Entry(categoria).State = EntityState.Modified;
             _context.SaveChanges();
             return Ok(categoria);
@@ -102,7 +95,7 @@ public class CategoriasController : ControllerBase
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema ao tratar a sua solicitação.");
+                "Ocorreu um problema ao tratar a sua solicitação.");
         }
     }
 
@@ -113,10 +106,7 @@ public class CategoriasController : ControllerBase
         {
             var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
 
-            if (categoria == null)
-            {
-                return NotFound($"Categoria com id={id} não encontrada...");
-            }
+            if (categoria == null) return NotFound($"Categoria com id={id} não encontrada...");
             _context.Categorias.Remove(categoria);
             _context.SaveChanges();
             return Ok(categoria);
@@ -124,7 +114,7 @@ public class CategoriasController : ControllerBase
         catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
-                           "Ocorreu um problema ao tratar a sua solicitação.");
+                "Ocorreu um problema ao tratar a sua solicitação.");
         }
     }
 }
