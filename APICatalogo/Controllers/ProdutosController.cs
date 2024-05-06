@@ -22,10 +22,7 @@ public class ProdutosController : ControllerBase
         try
         {
             var produtos = _context.Produtos.AsNoTracking().ToList();
-            if (produtos is null)
-            {
-                return NotFound();
-            }
+            if (produtos is null) return NotFound();
             return Ok(produtos);
         }
         catch (Exception)
@@ -35,16 +32,13 @@ public class ProdutosController : ControllerBase
         }
     }
 
-    [HttpGet("{id:int}", Name ="ObterProduto")]
+    [HttpGet("{id:int}", Name = "ObterProduto")]
     public ActionResult<Produto> Get(int id)
     {
         try
         {
             var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
-            if (produto is null)
-            {
-                return NotFound("Produto não localizado...");
-            }
+            if (produto is null) return NotFound("Produto não localizado...");
             return Ok(produto);
         }
         catch (Exception)
@@ -80,10 +74,7 @@ public class ProdutosController : ControllerBase
     {
         try
         {
-            if (id != produto.ProdutoId)
-            {
-                return BadRequest();
-            }
+            if (id != produto.ProdutoId) return BadRequest();
 
             _context.Entry(produto).State = EntityState.Modified;
             _context.SaveChanges();
@@ -104,10 +95,7 @@ public class ProdutosController : ControllerBase
         {
             var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
 
-            if (produto is null)
-            {
-                return NotFound("Produto não localizado...");
-            }
+            if (produto is null) return NotFound("Produto não localizado...");
             _context.Produtos.Remove(produto);
             _context.SaveChanges();
 
