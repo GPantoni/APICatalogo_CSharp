@@ -15,4 +15,21 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Extensions\**" />
+      <Compile Remove="Models\ErrorDetails.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Extensions\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Extensions\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Extensions\**" />
+    </ItemGroup>
+
 </Project>
