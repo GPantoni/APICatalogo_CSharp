@@ -22,7 +22,11 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
-        var produtos = _repository.GetProdutos();
+        var produtos = _repository.GetProdutos().ToList();
+        
+        if (produtos is null)
+            return NotFound();
+        
         return Ok(produtos);
     }
 
@@ -64,23 +68,30 @@ public class ProdutosController : ControllerBase
             return BadRequest("Dados inválidos...");
         }
 
-        _repository.Update(produto);
-        
-        return Ok(produto);
+        bool atualizado = _repository.Update(produto);
+
+        if (atualizado)
+        {
+            return Ok(produto);
+        }
+        else
+        {
+            return StatusCode(500, $"Falha ao atualizar o produto de id = {id}");
+        }
     }
 
     [HttpDelete]
     public ActionResult Delete(int id)
     {
-        var produto = _repository.GetProduto(id);
+        var deletado = _repository.Delete(id);
 
-        if (produto is null)
+        if (deletado)
         {
-            _logger.LogWarning($"Produto com id= {id} não encontrado...");
-            return NotFound($"Produto com id= {id} não encontrado...");
+            return Ok($"Produto de id = {id} foi excluído");
         }
-
-        var produtoExcluido = _repository.Delete(id);
-        return Ok(produtoExcluido);
+        else
+        {
+            return StatusCode(500, $"Falha ao excluir o produto de id = {id}");
+        }
     }
 }
