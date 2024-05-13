@@ -8,19 +8,19 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class ProdutosController : ControllerBase
 {
-    private readonly IProdutoRepository _repository;
+    private readonly IUnityOfWork _uof;
     private readonly ILogger<ProdutosController> _logger;
 
-    public ProdutosController(IProdutoRepository repository, ILogger<ProdutosController> logger)
+    public ProdutosController(ILogger<ProdutosController> logger, IUnityOfWork uof)
     {
-        _repository = repository;
         _logger = logger;
+        _uof = uof;
     }
 
     [HttpGet("produtos/{id}")]
     public ActionResult<IEnumerable<Produto>> GetProdutosCategoria(int id)
     {
-        var produtos = _repository.GetProdutosPorCategoria(id);
+        var produtos = _uof.ProdutoRepository.GetProdutosPorCategoria(id);
         
         if(produtos is null)
             return NotFound();
@@ -31,7 +31,7 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
-        var produtos = _repository.GetAll();
+        var produtos = _uof.ProdutoRepository.GetAll();
         
         if (produtos is null)
             return NotFound();
@@ -42,7 +42,7 @@ public class ProdutosController : ControllerBase
     [HttpGet("{id:int}", Name = "ObterProduto")]
     public ActionResult<Produto> Get(int id)
     {
-        var produto = _repository.Get(p => p.ProdutoId == id);
+        var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
         
         if (produto is null)
         {
@@ -62,7 +62,8 @@ public class ProdutosController : ControllerBase
             return BadRequest("Dados inválidos...");
         }
 
-        var produtoCriado = _repository.Create(produto);
+        var produtoCriado = _uof.ProdutoRepository.Create(produto);
+        _uof.Commit();
 
         return new CreatedAtRouteResult("ObterProduto",
             new { id = produtoCriado.ProdutoId }, produtoCriado);
@@ -77,7 +78,8 @@ public class ProdutosController : ControllerBase
             return BadRequest("Dados inválidos...");
         }
 
-        var produtoAtualizado = _repository.Update(produto);
+        var produtoAtualizado = _uof.ProdutoRepository.Update(produto);
+        _uof.Commit();
 
         return Ok(produtoAtualizado);
     }
@@ -85,11 +87,13 @@ public class ProdutosController : ControllerBase
     [HttpDelete]
     public ActionResult Delete(int id)
     {
-        var produto = _repository.Get(p => p.ProdutoId == id);
+        var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
         if (produto is null)
             return NotFound("Produto não encontrado...");
 
-        var produtoDeletado = _repository.Delete(produto);
+        var produtoDeletado = _uof.ProdutoRepository.Delete(produto);
+        _uof.Commit();
+        
         return Ok(produtoDeletado);
     }
 }
