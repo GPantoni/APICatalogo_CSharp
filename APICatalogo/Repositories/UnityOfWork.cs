@@ -4,11 +4,11 @@ namespace APICatalogo.Repositories;
 
 public class UnityOfWork : IUnityOfWork
 {
-    private IProdutoRepository? _produtoRepo;
     private ICategoriaRepository? _categoriaRepo;
 
     public AppDbContext _context;
-    
+    private IProdutoRepository? _produtoRepo;
+
     public UnityOfWork(AppDbContext context)
     {
         _context = context;
@@ -31,15 +31,12 @@ public class UnityOfWork : IUnityOfWork
 
     public ICategoriaRepository CategoriaRepository
     {
-        get
-        {
-            return _categoriaRepo = _categoriaRepo ?? new CategoriaRepository(_context);
-        }
+        get { return _categoriaRepo = _categoriaRepo ?? new CategoriaRepository(_context); }
     }
-    
-    public void Commit()
+
+    public async Task CommitAsync()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     public void Dispose()
