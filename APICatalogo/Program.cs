@@ -4,6 +4,7 @@ using APICatalogo.DTOs.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Logging;
 using APICatalogo.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,13 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer();
 
 var mySqlConnection = builder.Configuration.GetValue<string>("DbConnectionString");
 
