@@ -5,6 +5,7 @@ using APICatalogo.Pagination;
 using APICatalogo.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using X.PagedList;
 
 namespace APICatalogo.Controllers;
 
@@ -51,16 +52,16 @@ public class CategoriasController : ControllerBase
         return ObterCategorias(categoriasFiltradas);
     }
 
-    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(PagedList<Categoria> categorias)
+    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(IPagedList<Categoria> categorias)
     {
         var metadata = new
         {
-            categorias.TotalCount,
+            categorias.Count,
             categorias.PageSize,
-            categorias.CurrentPage,
-            categorias.TotalPages,
-            categorias.HasNext,
-            categorias.HasPrevious
+            categorias.PageCount,
+            categorias.TotalItemCount,
+            categorias.HasNextPage,
+            categorias.HasPreviousPage
         };
 
         Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
