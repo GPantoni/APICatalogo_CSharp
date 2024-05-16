@@ -15,9 +15,10 @@ public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
     {
         var categorias = await GetAllAsync();
         var categoriasOrdenadas = categorias.OrderBy(c => c.CategoriaId).AsQueryable();
-        
-        var resultado = await categoriasOrdenadas.ToPagedListAsync(categoriasParams.PageNumber, categoriasParams.PageSize);
-        
+
+        var resultado =
+            await categoriasOrdenadas.ToPagedListAsync(categoriasParams.PageNumber, categoriasParams.PageSize);
+
         return resultado;
     }
 
@@ -28,7 +29,8 @@ public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
         if (!string.IsNullOrEmpty(categoriasParams.Nome))
             categorias = categorias.Where(c => c.Nome.Contains(categoriasParams.Nome));
 
-        var categoriasFiltradas = await categorias.ToPagedListAsync(categoriasParams.PageNumber, categoriasParams.PageSize);
+        var categoriasFiltradas =
+            await categorias.ToPagedListAsync(categoriasParams.PageNumber, categoriasParams.PageSize);
 
         return categoriasFiltradas;
     }

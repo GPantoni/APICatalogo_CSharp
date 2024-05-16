@@ -16,8 +16,9 @@ public class ProdutoRepository : Repository<Produto>, IProdutoRepository
         var produtos = await GetAllAsync();
         var produtosOrdenados = produtos.OrderBy(p => p.Nome).AsQueryable();
 
-        var resultado = await produtosOrdenados.ToPagedListAsync(produtosParameters.PageNumber, produtosParameters.PageSize);
-        
+        var resultado =
+            await produtosOrdenados.ToPagedListAsync(produtosParameters.PageNumber, produtosParameters.PageSize);
+
         return resultado;
     }
 
@@ -35,7 +36,8 @@ public class ProdutoRepository : Repository<Produto>, IProdutoRepository
                 produtos = produtos.Where(p => p.Preco == produtosFiltroParams.Preco.Value).OrderBy(p => p.Preco);
         }
 
-        var produtosFiltrados = await produtos.ToPagedListAsync(produtosFiltroParams.PageNumber, produtosFiltroParams.PageSize);
+        var produtosFiltrados =
+            await produtos.ToPagedListAsync(produtosFiltroParams.PageNumber, produtosFiltroParams.PageSize);
         return produtosFiltrados;
     }
 
