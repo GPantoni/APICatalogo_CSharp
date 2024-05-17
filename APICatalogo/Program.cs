@@ -1,14 +1,17 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using APICatalogo.Context;
 using APICatalogo.DTOs.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Logging;
 using APICatalogo.Models;
+using APICatalogo.RateLimitOptions;
 using APICatalogo.Repositories;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -23,7 +26,10 @@ builder.Services.AddControllers(options =>
             .ReferenceHandler = ReferenceHandler.IgnoreCycles)
     .AddNewtonsoftJson();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+const string OrigensComAcessoPermitido = "_origensComAcessoPermitido";
+builder.Services.AddCors(options =>
+    options.AddPolicy(OrigensComAcessoPermitido, policy => policy.WithOrigins("https://www.apirequest.io")));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -100,6 +106,38 @@ builder.Services.AddAuthorization(options =>
             context.User.IsInRole("SuperAdmin")));
 });
 
+var myOptions = new MyRateLimitOptions();
+builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
+
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.AddFixedWindowLimiter("fixedwindow", options =>
+    {
+        options.PermitLimit = myOptions.PermitLimit; //1;
+        options.Window = TimeSpan.FromSeconds(myOptions.Window);
+        options.QueueLimit = myOptions.QueueLimit; //2;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+    rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpcontext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpcontext.User.Identity?.Name ??
+            httpcontext.Request.Headers.Host.ToString(),
+            partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 2,
+                QueueLimit = 0,
+                Window = TimeSpan.FromSeconds(10)
+            }));
+});
+
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -124,6 +162,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseRateLimiter();
+
+app.UseCors(OrigensComAcessoPermitido);
 
 app.UseAuthorization();
 
