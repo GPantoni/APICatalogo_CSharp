@@ -11,6 +11,7 @@ namespace APICatalogo.Controllers;
 
 [Route("[controller]")]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
