@@ -17,13 +17,11 @@ namespace APICatalogo.Controllers;
 // [ApiExplorerSettings(IgnoreApi = true)]
 public class ProdutosController : ControllerBase
 {
-    private readonly ILogger<ProdutosController> _logger;
     private readonly IMapper _mapper;
     private readonly IUnityOfWork _uof;
 
-    public ProdutosController(ILogger<ProdutosController> logger, IUnityOfWork uof, IMapper mapper)
+    public ProdutosController(IUnityOfWork uof, IMapper mapper)
     {
-        _logger = logger;
         _uof = uof;
         _mapper = mapper;
     }
@@ -77,9 +75,9 @@ public class ProdutosController : ControllerBase
     }
 
     /// <summary>
-    /// Exibe uma relação dos produtos
+    ///     Exibe uma relação dos produtos
     /// </summary>
-    /// <returns>Retorna uma lista dde objetos Produto</returns>
+    /// <returns>Retorna uma lista de objetos do tipo Produto</returns>
     [HttpGet]
     [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get()
@@ -94,20 +92,18 @@ public class ProdutosController : ControllerBase
     }
 
     /// <summary>
-    /// Obtém o produto pelo seu identificador id
+    ///     Obtém o produto pelo seu identificador id
     /// </summary>
     /// <param name="id">Código do produto</param>
     /// <returns>Um objeto Produto</returns>
     [HttpGet("{id:int}", Name = "ObterProduto")]
     public async Task<ActionResult<ProdutoDTO>> Get(int id)
     {
+        if (id == null || id <= 0) return BadRequest("Id inválido...");
+        
         var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
-        if (produto is null)
-        {
-            _logger.LogWarning($"Produto com id= {id} não encontrado...");
-            return NotFound($"Produto com id= {id} não encontrado...");
-        }
+        if (produto is null) return NotFound($"Produto com id= {id} não encontrado...");
 
         var produtoDto = _mapper.Map<ProdutoDTO>(produto);
         return Ok(produtoDto);
@@ -116,11 +112,7 @@ public class ProdutosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ProdutoDTO>> Post(ProdutoDTO produtoDto)
     {
-        if (produtoDto is null)
-        {
-            _logger.LogWarning("Dados inválidos...");
-            return BadRequest("Dados inválidos...");
-        }
+        if (produtoDto is null) return BadRequest("Dados inválidos...");
 
         var produto = _mapper.Map<Produto>(produtoDto);
 
@@ -137,11 +129,7 @@ public class ProdutosController : ControllerBase
     public async Task<ActionResult<ProdutoDTOUpdateResponse>> Patch(int id,
         JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDto)
     {
-        if (patchProdutoDto is null || id <= 0)
-        {
-            _logger.LogWarning("Dados inválidos...");
-            return BadRequest("Dados inválidos...");
-        }
+        if (patchProdutoDto is null || id <= 0) return BadRequest("Dados inválidos...");
 
         var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
@@ -164,11 +152,7 @@ public class ProdutosController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ProdutoDTO>> Put(int id, ProdutoDTO produtoDto)
     {
-        if (id != produtoDto.ProdutoId)
-        {
-            _logger.LogWarning("Dados inválidos...");
-            return BadRequest("Dados inválidos...");
-        }
+        if (id != produtoDto.ProdutoId) return BadRequest("Dados inválidos...");
 
         var produto = _mapper.Map<Produto>(produtoDto);
         var produtoAtualizado = _uof.ProdutoRepository.Update(produto);

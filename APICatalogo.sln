@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APICatalogoxUnitTests", "APICatalogoxUnitTests\APICatalogoxUnitTests.csproj", "{C32F41C8-1998-4658-AB01-F9349DC18DD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{9C799452-F160-4765-B39B-89C12C706779}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C799452-F160-4765-B39B-89C12C706779}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C799452-F160-4765-B39B-89C12C706779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C32F41C8-1998-4658-AB01-F9349DC18DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C32F41C8-1998-4658-AB01-F9349DC18DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C32F41C8-1998-4658-AB01-F9349DC18DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C32F41C8-1998-4658-AB01-F9349DC18DD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
