@@ -9,7 +9,7 @@ namespace APICatalogoxUnitTests.UnitTests;
 public class ProdutoUnitTestController
 {
     private static string connectionString =
-        "Server=localhost;DataBase=CatalogoDB;Uid=root;Pwd=*************";
+        "Server=localhost;DataBase=CatalogoDB;Uid=root;Pwd=Mysql-100";
 
     public IMapper mapper;
     public IUnityOfWork repository;
